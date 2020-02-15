@@ -22,7 +22,7 @@ int main(){
     std::cout << "Placing bombs:\n";
     for (int y = 0; y < tilesVert; y++) {
         for (int x = 0; x < tilesHoriz; x++) {
-            knownTile[x][y] = true;
+            knownTile[x][y] = false;
             tile[x][y]=0;
             if (rand()%bombChanceDivisor==0)
                 tile[x][y]=9;
@@ -57,6 +57,22 @@ int main(){
         while(window.pollEvent(event)){
             if (event.type == sf::Event::Closed)
                 window.close();
+            
+            if(event.type == sf::Event::MouseButtonPressed){
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if((mousePos.x - windowPaddingLeft >= 0) 
+                    && (mousePos.x - windowPaddingLeft < tileWidth*tilesHoriz) 
+                    && (mousePos.y - windowPaddingTop >= 0)
+                    && (mousePos.y - windowPaddingTop < tileWidth*tilesVert))
+                {
+                    int mouseTileX = (mousePos.x - windowPaddingLeft)/tileWidth;
+                    int mouseTileY = (mousePos.y - windowPaddingTop)/tileWidth;
+                    std::cout << "Mouse pressed at X:" << mouseTileX << " Y:" << mouseTileY << "\n";
+                    if(event.key.code == sf::Mouse::Left) knownTile[mouseTileX][mouseTileY] = true;
+                    //todo if tile[mtx][mty] is bomb, game over
+                    //todo if tile[mtx][mty] is 0, fill/flood algo
+                }
+            }
             //todo get mouse button press
             //  right mb == flag thing
         }
@@ -71,8 +87,6 @@ int main(){
                 window.draw(sprites);
             }
         }
-        
-
         window.display();
     }
 
