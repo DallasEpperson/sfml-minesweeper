@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <time.h>
 #include <iostream>
 
 int main(){
@@ -6,6 +7,8 @@ int main(){
     int tilesVert=12, tilesHoriz=12;
     int windowPaddingLeft=8, windowPaddingRight=8, windowPaddingTop=8, windowPaddingBottom=8;
     int bombChanceDivisor=5;
+
+    srand(time(NULL));
 
     sf::RenderWindow window(sf::VideoMode(
         (tileWidth*tilesHoriz) + windowPaddingLeft + windowPaddingRight, 
