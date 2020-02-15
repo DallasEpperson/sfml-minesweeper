@@ -1,10 +1,30 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
-#include <iostream>
+
+const int tilesVert=12, tilesHoriz=12;
+int tile[tilesVert][tilesHoriz];
+bool knownTile[tilesVert][tilesHoriz];
+
+void floodUncover(int x, int y){
+    if(knownTile[x][y]) return;
+    knownTile[x][y]=true;
+    if(tile[x][y]!=0)return;
+    if(y-1 >= 0) floodUncover(x, y-1);
+    if(y+1 < tilesVert) floodUncover(x, y+1);
+    if(x-1 >= 0){
+        if(y-1>=0) floodUncover(x-1,y-1);
+        floodUncover(x-1,y);
+        if(y+1 < tilesVert) floodUncover(x-1,y+1);
+    }
+    if(x+1 < tilesHoriz){
+        if(y-1>=0) floodUncover(x+1,y-1);
+        floodUncover(x+1,y);
+        if(y+1 < tilesVert) floodUncover(x+1,y+1);
+    }
+}
 
 int main(){
     int tileWidth=32;
-    int tilesVert=12, tilesHoriz=12;
     int windowPaddingLeft=8, windowPaddingRight=8, windowPaddingTop=8, windowPaddingBottom=8;
     int bombChanceDivisor=5;
 
@@ -18,22 +38,16 @@ int main(){
     sf::Texture texture;
     texture.loadFromFile("./sprites.png");
     sf::Sprite sprites(texture);
-
-    int tile[tilesVert][tilesHoriz];
-    bool knownTile[tilesVert][tilesHoriz];
     
-    std::cout << "Placing bombs:\n";
     for (int y = 0; y < tilesVert; y++) {
         for (int x = 0; x < tilesHoriz; x++) {
             knownTile[x][y] = false;
             tile[x][y]=0;
             if (rand()%bombChanceDivisor==0)
                 tile[x][y]=9;
-            std::cout << "X:" << x << " Y:" << y << " = " << tile[x][y] << "\n";
         }
     }
 
-    std::cout << "Finding neighbors\n";
     for (int y = 0; y < tilesVert; y++) {
         for (int x = 0; x < tilesHoriz; x++) {
             int neighbors=0;
@@ -51,7 +65,6 @@ int main(){
                 if((y-1)>=0 && tile[x-1][y-1]==9) neighbors++;
             }
             tile[x][y]=neighbors;
-            std::cout << "X:" << x << " Y:" << y << " = " << tile[x][y] << "\n";
         }
     }
 
@@ -70,8 +83,7 @@ int main(){
                 {
                     int mouseTileX = (mousePos.x - windowPaddingLeft)/tileWidth;
                     int mouseTileY = (mousePos.y - windowPaddingTop)/tileWidth;
-                    std::cout << "Mouse pressed at X:" << mouseTileX << " Y:" << mouseTileY << "\n";
-                    if(event.key.code == sf::Mouse::Left) knownTile[mouseTileX][mouseTileY] = true;
+                    if((sf::Mouse::Button)event.key.code == sf::Mouse::Left) floodUncover(mouseTileX, mouseTileY);
                     //todo if tile[mtx][mty] is bomb, game over
                     //todo if tile[mtx][mty] is 0, fill/flood algo
                 }
