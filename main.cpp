@@ -33,7 +33,8 @@ int main(){
     sf::RenderWindow window(sf::VideoMode(
         (tileWidth*tilesHoriz) + windowPaddingLeft + windowPaddingRight, 
         (tileWidth*tilesVert) + windowPaddingTop + windowPaddingBottom), 
-        "Minesweeper");
+        "Minesweeper",
+        sf::Style::Titlebar | sf::Style::Close);
     
     sf::Texture texture;
     texture.loadFromFile("./sprites.png");
